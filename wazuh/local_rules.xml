@@ -1,0 +1,73 @@
+<!-- Local rules -->
+
+<!-- Modify it at your will. -->
+<!-- Copyright (C) 2015, Wazuh Inc. -->
+
+<!-- Example -->
+<group name="local,syslog,sshd,">
+
+  <!--
+  Dec 10 01:02:02 host sshd[1234]: Failed none for root from 1.1.1.1 port 1066 ssh2
+  -->
+  <rule id="100001" level="5">
+    <if_sid>5716</if_sid>
+    <srcip>1.1.1.1</srcip>
+    <description>sshd: authentication failed from IP 1.1.1.1.</description>
+    <group>authentication_failed,pci_dss_10.2.4,pci_dss_10.2.5,</group>
+  </rule>
+
+</group>
+
+
+<group name="custom_windows,">
+
+  <!-- D1: PowerShell EncodedCommand detected -->
+  <rule id="100101" level="10">
+    <if_sid>63103</if_sid>
+    <description>D1: Defense Evasion - Windows Security Audit Log Cleared.</description>
+    <mitre>
+      <id>T1070.001</id>
+    </mitre>
+  </rule>
+ 
+  <rule id="100102" level="10">
+    <if_sid>60109</if_sid>
+    <description>D2: Persistence - Suspicious Windows local account created.</description>
+    <mitre>
+      <id>T1136.001</id>
+    </mitre>
+  </rule>
+
+  <rule id="100103" level="10">
+    <if_sid>67027</if_sid>
+    <field name="win.eventdata.commandLine">advfirewall set allprofiles state off</field>
+    <description>D3: Impair Defenses - Windows Firewall disabled via netsh.</description>
+    <mitre>
+      <id>T1562.004</id>
+    </mitre>
+  </rule>
+
+</group>
+
+<group name="custom_linux,">
+
+  <rule id="100104" level="10">
+    <if_sid>5902</if_sid>
+    <description>D4: Persistence - Suspicious new local account created.</description>
+    <mitre>
+      <id>T1136.001</id>
+    </mitre>
+  </rule>
+
+  <rule id="100105" level="8">
+    <if_sid>5402</if_sid>
+    <match>/usr/sbin/ufw disable</match>
+    <description>D5: Impair Defenses - Linux Firewall (UFW) disabled via sudo.</description>
+    <mitre>
+      <id>T1562.004</id>
+    </mitre>
+  </rule>
+
+</group>
+
+

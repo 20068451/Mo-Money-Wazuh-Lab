@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    volumes:
+      - ollama_data:/root/.ollama
+    ports:
+      - "11434:11434"
+    command: serve
+    networks:
+      - ai-net
+    restart: unless-stopped
+
+  ai-remediation:
+    build: ./ai-service
+    container_name: ai-remediation
+    depends_on:
+      - ollama
+    environment:
+      - WAZUH_API_URL=https://10.20.1.235:55000
+      - WAZUH_API_USER="USERNAME"
+      - WAZUH_API_PASS="PASSWORD"
+      - OLLAMA_URL=http://ollama:11434/api/generate
+    volumes:
+      - ./logs:/app/logs
+    networks:
+      - ai-net
+    restart: unless-stopped
+
+networks:
+  ai-net:
+    driver: bridge
+
+volumes:
+  ollama_data:
+
